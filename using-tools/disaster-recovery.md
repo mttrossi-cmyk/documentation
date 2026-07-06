@@ -448,7 +448,7 @@ After all backup files are downloaded, decrypted and indexed, you can start with
 
 `Duplicati.RecoveryTool.exe restore <localfolder> [version] [options]`
 
-`<localfolder>` is a required option. It should point to the location where your downloaded remote files are stored. Optionally add `--targetpath` to specify where files must be restored to, otherwise the files are restored to their original locations. Use filters or the `--exclude` option to perform a partial restore. See [exclude](../06-advanced-options/#exclude) and [Filters](../security-and-secrets/filters-in-duplicati#filter-types) for more information.
+`<localfolder>` is a required option. It should point to the location where your downloaded remote files are stored. Optionally add `--targetpath` to specify where files must be restored to, otherwise the files are restored to their original locations. Use filters or the `--exclude` option to perform a partial restore. See [exclude](../community-docs/community-docs-advanced-options.md#exclude-) and [Filters](../detailed-descriptions/security-and-secrets/filters-in-duplicati.md#filters-in-duplicati)) for more information.
 
 In this example, files are restored to `C:\Restore`, so an empty folder `C:\Restore` is created first.
 
