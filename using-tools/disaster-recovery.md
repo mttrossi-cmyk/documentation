@@ -85,7 +85,7 @@ There is one .dlist file for each backup version. The data itself is stored in a
 
 ## Inventory of files that are going to be corrupted
 
-Prior to corrupting the consistent backup, we can inventory what the consequences are if these files get lost. You can use the Duplicati command `affected` to see which files are affected by a remote file. The `affected` command needs the local database, so you can perform this operation only if you have a fully working Duplicati installation for this backup job. See [The AFFECTED command](..//community-docs/community-docs-using-duplicati-from-the-commandline#the-affected-command) for more information.
+Prior to corrupting the consistent backup, we can inventory what the consequences are if these files get lost. You can use the Duplicati command `affected` to see which files are affected by a remote file. The `affected` command needs the local database, so you can perform this operation only if you have a fully working Duplicati installation for this backup job. See [The AFFECTED command](../community-docs/community-docs-using-duplicati-from-the-commandline#the-affected-command) for more information.
 
 The first command returns which source files need information from the remote file `duplicati-b69a2a32a50bb4c6d8780389efdbf7442.dblock.zip.aes`.
 
