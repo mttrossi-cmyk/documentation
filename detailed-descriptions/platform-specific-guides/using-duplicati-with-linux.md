@@ -88,7 +88,7 @@ sudo systemctl status duplicati.service
 
 The server is now running and will automatically start when you restart the machine.
 
-**Note:** the service runs in the `root` user context, so files will be stored in `/root/.config/Duplicati` on most systems, but in `/Duplicati` on other systems. Use the `DAEMON_OPTS` to add `--server-datafolder=<path to storage folder>` if you want a specific location.
+**Note:** the service runs in the `root` user context, so files will be stored in `/root/.config/Duplicati` on most systems, but in `/var/lib/Duplicati` on other systems. Use the `DAEMON_OPTS` to add `--server-datafolder=<path to storage folder>` if you want a specific location.
 
 To check the logs (and possibly obtain a signin link), the following command can usually be used:
 
