@@ -8,7 +8,7 @@ Duplicati is an open-source backup software that provides encrypted, incremental
 
 ```
 git clone https://github.com/duplicati/duplicati
-dotnet build Duplicati.sln
+dotnet build Duplicati.slnx
 ```
 
 The build artifacts & executables of other components, such as the [Tray Icon](../duplicati-programs/trayicon.md), [Server](../duplicati-programs/server.md), [CLI utilities](../duplicati-programs/command-line-interface-cli-1/) will be located under Executables/net8 directory.
@@ -16,11 +16,11 @@ The build artifacts & executables of other components, such as the [Tray Icon](.
 To run the tray icon:
 
 ```
-dotnet run Executables/net8/Duplicati.GUI.TrayIcon/Duplicati.GUI.TrayIcon.csproj
+dotnet run Executables/net10Duplicati.GUI.TrayIcon/Duplicati.GUI.TrayIcon.csproj
 ```
 
 Optionally to run all Unit tests:
 
 ```
-dotnet test Duplicati.sln 
+dotnet test Duplicati.slnx
 ```
