@@ -8,7 +8,7 @@ Duplicati has a wide variety of storage destinations, but the [Rclone project](h
 
 If you are using Rclone, some features, such as bandwidth limits and transfer progress do not work.
 
-Duplicati does not bundle Rclone, so you need to download and install the appropriate binaries before you can use this backend.&#x20;
+Duplicati does not bundle Rclone, so you need to download and install the appropriate binaries before you can use this backend.
 
 ## User interface
 
@@ -37,6 +37,10 @@ rclone://
 ## Advanced options
 
 If you need to change the Rclone local repo you can use the option `--rclone-local-repository` which will otherwise be set to `local`, which works for most setups.
+
+{% hint style="info" %}
+You must add a remote called local with the storage type 'Local Disk' to the rclone config for the use of duplicati with rclone.
+{% endhint %}
 
 If you need to supply options to Rclone, these can be passed via `--rclone-option`. Note that the values must be url encoded, and multiple options can be passed by separating them with spaces, before encoding.
 
