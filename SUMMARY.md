@@ -110,6 +110,7 @@
   * [SharePoint v2 (Graph API)](backup-destinations/provider-specific-destinations/sharepoint-v2-graph-api.md)
   * [Filen.io](backup-destinations/provider-specific-destinations/filen.io.md)
   * [FileJump](backup-destinations/provider-specific-destinations/filejump.md)
+  * [Drime Cloud](backup-destinations/provider-specific-destinations/drime-cloud.md)
 * [File synchronization providers](backup-destinations/file-synchronization-providers/README.md)
   * [Dropbox Destination](backup-destinations/file-synchronization-providers/dropbox-destination.md)
   * [Google Drive Destination](backup-destinations/file-synchronization-providers/googledrive-destination.md)

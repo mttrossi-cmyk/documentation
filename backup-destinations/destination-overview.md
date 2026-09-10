@@ -46,6 +46,7 @@ Storage destinations in this category are specific to one particular provider an
 * [SharePoint](provider-specific-destinations/sharepoint-destination.md)
 * [FileJump](provider-specific-destinations/filejump.md)
 * [Filen.io](provider-specific-destinations/filen.io.md)
+* [Drime Cloud](provider-specific-destinations/drime-cloud.md)
 
 ## File synchronization providers
 
