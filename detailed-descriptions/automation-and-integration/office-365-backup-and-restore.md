@@ -59,7 +59,7 @@ When making backups of a Microsoft 365 tenant, the advanced option `--store-meta
 | ---------------------------------------- | --------------------------------------------------- | ------------------------------ |
 | Client secret                            | App client credentials with secret                  | Automated or unattended backup |
 | Certificate                              | OAuth 2.0 client credentials with X.509 certificate | Higher security environments   |
-| Delegated user (not currently supported) | OAuth 2.0 credentials for an AD super admin         | Some APIs require this         |
+| Delegated user (not currently supported) | OAuth 2.0 credentials for an AD super admin         | Not available, all access uses application permissions |
 
 #### Connection configuration settings
 
@@ -70,8 +70,8 @@ When making backups of a Microsoft 365 tenant, the advanced option `--store-meta
 | Parameter                          | Description                                                                                                                                                                                                                                                                                                                                         |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--office365-included-root-types`            | The different root types to include for backups. The default setting is to include all types: `Users`, `Groups` and `Sites`                                                                                                                                                                                                                         |
-| `--office365-included-user-types`            | <p>The data types to include from users in backups. The default settings include: <code>Profile</code>, <code>Mailbox</code>, <code>Calendar</code>, <code>Contacts</code>, <code>Planner</code> and <code>Chats</code>. <br><br>If delegated permissions are used, these types can also be included: <code>Tasks</code> and <code>Notes</code></p> |
-| `--office365-included-group-types`           | <p>The data types to include from groups in backups. The default settings include: <code>Mailbox</code>, <code>Files</code>, <code>Planner</code> and <code>Teams</code>.<br><br>If delegated permissions are used, these types can also be included: <code>Calendar</code> and <code>Notes</code></p>                                              |
+| `--office365-included-user-types`            | <p>The data types to include from users in backups. The default settings include: <code>Profile</code>, <code>Mailbox</code>, <code>Calendar</code>, <code>Contacts</code>, <code>Planner</code> and <code>Chats</code>. <br><br>Not included by default, but can be added: <code>Tasks</code> and <code>Notes</code></p> |
+| `--office365-included-group-types`           | <p>The data types to include from groups in backups. The default settings include: <code>Mailbox</code>, <code>Files</code>, <code>Planner</code> and <code>Teams</code>.<br><br>Not included by default, but can be added: <code>Calendar</code> and <code>Notes</code></p>                                              |
 | `--office365-included-user-classifications`  | <p>Top-level filter for users based on classification. A comma-separated list (flags) of: <code>Licensed</code>, <code>Unlicensed</code>, <code>SharedMailboxWithStorage</code>, <code>SharedMailboxWithoutStorage</code>. When set, only users matching the classification are included.</p>                                                      |
 | `--office365-included-group-classifications` | Top-level filter for groups based on classification. A comma-separated list (flags) of: `Unified` (Microsoft 365 group), `NotUnified` (security group or distribution list). When set, only groups matching the classification are included.                                                                                                       |
 | `--office365-included-site-classifications`  | Top-level filter for sites based on classification. A comma-separated list (flags) of: `Group` (group-connected team site), `Classic` (non-group team site), `Communication` (modern communication site), `Personal` (OneDrive for Business site), `Other`. When set, only sites matching the classification are included.                       |
@@ -79,8 +79,10 @@ When making backups of a Microsoft 365 tenant, the advanced option `--store-meta
 
 #### Permission types
 
-* **Application permissions**: Used for most backup/restore operations and require admin consent.
-* **Delegated permissions**: Required for certain features (Tasks, Notes, Group Calendar).
+* **Application permissions**: All backup and restore operations use Microsoft Graph application permissions, obtained through the OAuth 2.0 client credentials flow. Application permissions require admin consent.
+* **Delegated permissions**: Not used. Duplicati does not sign in as a user, so no delegated permissions need to be granted.
+
+The full list of required permissions is in the [API permissions reference](office-365-backup-and-restore.md#api-permissions-reference).
 
 ### Supported data types
 
@@ -100,20 +102,20 @@ When making backups of a Microsoft 365 tenant, the advanced option `--store-meta
 | Planner plans         | ✅      | ⚠️           | Plans cannot be created via API                                                              |
 | Planner buckets       | ✅      | ✅            | Restored to existing plans                                                                   |
 | Planner tasks         | ✅      | ✅            | Full task details and assignments                                                            |
-| OneNote notebooks     | ⚠️     | ⚠️           | Requires delegated permissions                                                               |
-| OneNote sections      | ⚠️     | ⚠️           | Including section groups                                                                     |
-| OneNote pages         | ⚠️     | ⚠️           | HTML content                                                                                 |
-| To-Do task lists      | ⚠️     | ⚠️           | Requires delegated permissions                                                               |
-| To-Do tasks           | ⚠️     | ⚠️           | Including checklist items                                                                    |
+| OneNote notebooks     | ✅      | ✅            | Not included by default, add `Notes` to the included user/group types                        |
+| OneNote sections      | ✅      | ✅            | Including section groups                                                                     |
+| OneNote pages         | ✅      | ✅            | HTML content                                                                                 |
+| To-Do task lists      | ✅      | ✅            | Not included by default, add `Tasks` to the included user types                              |
+| To-Do tasks           | ✅      | ✅            | Including checklist items                                                                    |
 | User profile          | ✅      | ✅            | Photo and editable properties                                                                |
-| User chats            | ⚠️     | ⚠️           | <p>Backup needs delegated permissions<br>Restore has API limitations, needs MS whitelist</p> |
-| Chat messages         | ⚠️     | ⚠️           | <p>Backup needs delegated permissions<br>Restore has API limitations, needs MS whitelist</p> |
+| User chats            | ✅      | ❌            | Backup only. Chats can be restored to a local disk, but not into a tenant                    |
+| Chat messages         | ✅      | ❌            | Backup only, including hosted content (images)                                               |
 | Teams channels        | ✅      | ✅            | Standard and private channels                                                                |
-| Channel messages      | ✅      | ⚠️           | <p>Including replies<br>Restore requires MS whitelist</p>                                    |
+| Channel messages      | ✅      | ✅            | Including replies. Restored in migration mode, preserving sender and timestamp               |
 | Channel tabs          | ✅      | ✅            | Tab configuration preserved                                                                  |
 | Team apps             | ✅      | ✅            | App installation restored                                                                    |
 | Group conversations   | ✅      | ⚠️           | <p>Threads and posts<br>Restore requires MS whitelist</p>                                    |
-| Group calendar        | ✅      | ✅            | Requires delegated permissions                                                               |
+| Group calendar        | ❌      | ❌            | Not supported. The Graph API only allows group calendar access with delegated permissions    |
 | Group members         | ✅      | ✅            | Membership restored                                                                          |
 | Group owners          | ✅      | ✅            | Ownership restored                                                                           |
 | Group settings        | ✅      | ✅            | Configuration properties                                                                     |
@@ -205,15 +207,14 @@ When making backups of a Microsoft 365 tenant, the advanced option `--store-meta
 
 #### OneNote
 
-{% hint style="danger" %}
-All OneNote items require delegated permissions
+{% hint style="info" %}
+OneNote is not included in backups by default. Add `Notes` to `--office365-included-user-types` and/or `--office365-included-group-types` to include it.
 {% endhint %}
 
 **Backup**
 
 * Notebooks, section groups, sections enumerated.
 * Pages exported as HTML content.
-* Requires delegated permissions.
 
 **Restore**
 
@@ -222,6 +223,10 @@ All OneNote items require delegated permissions
 * Pages restored as HTML.
 
 #### To-Do tasks
+
+{% hint style="info" %}
+To-Do is not included in backups by default. Add `Tasks` to `--office365-included-user-types` to include it.
+{% endhint %}
 
 **Backup**
 
@@ -240,16 +245,15 @@ All OneNote items require delegated permissions
 
 **Backup**
 
-* Chat conversations enumerated.
+* Chat conversations and members enumerated.
 * Messages captured with content.
 * Hosted content (images) backed up.
+* Requires `Chat.Read.All`.
 
 **Restore**
 
-* New chats created with members.
-* Messages sent to new chats.
-* **Limitation**: Original sender context lost.
-* **Limitation**: Requires an App registration whitelisted by Microsoft
+* Restoring chats into a tenant is not supported.
+* Chats can be restored to a local disk for inspection.
 
 #### Teams channels
 
@@ -261,9 +265,13 @@ All OneNote items require delegated permissions
 
 **Restore**
 
-* Channels created if not existing.
+* Channels created if not existing. Requires `Channel.Create`.
 * Existing channels reused by name match.
-* Messages posted to channels if App is whitelisted
+* Messages and replies are imported in migration mode, which preserves the original sender and timestamp. Requires `Teamwork.Migrate.All`.
+* The target channel is put into migration mode for the duration of the restore, and migration is completed when the restore finishes.
+* Existing messages are read to avoid duplicates, matching on sender and timestamp. Requires `ChannelMessage.Read.All`.
+* If the restore target is a team rather than a specific channel, and the original channel cannot be determined, messages are placed in a channel named "Restored".
+* Hosted content (inline images) is not restored.
 
 #### SharePoint
 
@@ -284,22 +292,23 @@ All OneNote items require delegated permissions
 
 | Limitation            | Description                                         | Impact                                                                    |
 | --------------------- | --------------------------------------------------- | ------------------------------------------------------------------------- |
-| Chat messages restore | Chat messages need an App whitelisted by Microsoft | Requires an application to Microsoft before chat messages can be restored |
-| Chat message restore  | Cannot preserve original sender                     | Messages appear from application                                          |
-| Chat hosted content   | Cannot restore inline images                        | Images lost on restore                                                    |
+| Chat restore          | Chats cannot be restored into a tenant              | Chats are backup only, restore to local disk instead                      |
+| Channel message media | Cannot restore inline images                        | Hosted content lost on restore                                            |
+| Group calendar        | Graph only supports delegated permissions           | Group calendars cannot be backed up or restored                           |
 | Planner plan creation | Plans cannot be created via API                     | Plans must pre-exist                                                      |
 | File versions         | Only current version backed up                      | Historical versions not available                                         |
 | Soft-deleted items    | Not captured in backup                              | Recently deleted items excluded                                           |
 | Rate limiting         | Graph API throttling (429 responses)                | Automatic retry with backoff                                              |
 
-#### Permission limitations
+#### Types excluded by default
 
-| Feature         | Permission type | Notes                  |
-| --------------- | --------------- | ---------------------- |
-| Tasks (To-Do)   | Delegated       | Requires user context  |
-| Notes (OneNote) | Delegated       | Requires user context  |
-| Group calendar  | Delegated       | Requires user context  |
-| All others      | Application     | Admin consent required |
+| Feature                  | Default  | How to enable                                              |
+| ------------------------ | -------- | ---------------------------------------------------------- |
+| To-Do (user `Tasks`)     | Excluded | Add `Tasks` to `--office365-included-user-types`           |
+| OneNote (user `Notes`)   | Excluded | Add `Notes` to `--office365-included-user-types`           |
+| OneNote (group `Notes`)  | Excluded | Add `Notes` to `--office365-included-group-types`          |
+| Group calendar           | Excluded | Not supported. The Graph API only allows delegated permissions |
+| All others               | Included | Remove the type from the included types to exclude it      |
 
 #### Data fidelity limitations
 
@@ -313,108 +322,128 @@ For restores into a Microsoft 365 tenant, data is technically "created again" as
 | Calendar  | Online meeting links preserved but not recreated             |
 | Contacts  | Contact ID changes on restore                                |
 | Files     | File ID changes; hash and timestamps preserved               |
-| Messages  | Original sender/timestamp lost on restore                    |
+| Messages  | Sender and timestamp preserved, but message ID changes       |
 
 ### API permissions reference
 
-Permissions are divided by operation (backup vs restore) and permission model (application vs delegated). Application permissions require admin consent.
+All permissions are Microsoft Graph **application permissions** granted to the app registration, and they require admin consent. Read permissions are only needed for backup. Restore requires the corresponding write permissions, and a granted write permission also covers its read counterpart, so an app registration used for both backup and restore only needs the restore list plus the backup-only Teams permissions.
+
+Duplicati reads the granted permissions from the `roles` claim of the access token, so no additional Graph calls are needed to verify them.
 
 #### Backup permissions
 
-**Application permissions**
-
 ```
+User.Read.All
+Group.Read.All
 Mail.Read
 MailboxSettings.Read
 Calendars.Read
 Contacts.Read
 Files.Read.All
 Sites.Read.All
-User.Read.All
-Group.Read.All
+Notes.Read.All
+Tasks.Read.All
+TeamMember.Read.All
 ChannelMessage.Read.All
-Channel.ReadBasic.All
-Team.ReadBasic.All
-TeamsTab.Read.All
-TeamsAppInstallation.ReadForTeam.All
 Chat.Read.All
-```
-
-**Delegated permissions (Planner, OneNote, To-Do, Group Calendar)**
-
-```
-Tasks.Read
-Notes.Read
-Group.Read.All
 ```
 
 #### Restore permissions
 
-**Application permissions**
-
 ```
+User.ReadWrite.All
+Group.ReadWrite.All
 Mail.ReadWrite
 MailboxSettings.ReadWrite
 Calendars.ReadWrite
 Contacts.ReadWrite
 Files.ReadWrite.All
 Sites.ReadWrite.All
-User.ReadWrite.All
-Group.ReadWrite.All
-ChannelMessage.Send
-Channel.Create
-TeamsTab.ReadWrite.All
-TeamsAppInstallation.ReadWriteForTeam.All
-Chat.ReadWrite.All
-ChatMessage.Send
-```
-
-**Delegated permissions (Planner, OneNote, To-Do, Group Calendar)**
-
-```
-Tasks.ReadWrite
 Notes.ReadWrite.All
-Group.ReadWrite.All
+Tasks.ReadWrite.All
+Channel.Create
+ChannelMessage.Read.All
+Teamwork.Migrate.All
 ```
+
+{% hint style="info" %}
+The Teams-specific permissions `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `TeamsTab.Read.All`, `TeamsAppInstallation.ReadForTeam.All`, `TeamsTab.ReadWrite.All`, and `TeamsAppInstallation.ReadWriteForTeam.All` are the least-privileged permissions for reading teams, channels, tabs, and installed apps, and for creating tabs and installing apps. They are not required, because Microsoft Graph also accepts `Group.Read.All` / `Group.ReadWrite.All` for those endpoints, and the group permissions are already needed for group backup and restore.
+{% endhint %}
+
+{% hint style="info" %}
+Channel messages are restored in migration mode, which requires `Teamwork.Migrate.All`. `ChannelMessage.Read.All` is required for both backup and restore, because the restore reads existing messages to detect duplicates. `Chat.Read.All` is only needed for backup, as user chats cannot be restored into a tenant.
+{% endhint %}
+
+#### Permission details
+
+| Permission                  | Backup | Restore | Used for                                                                       |
+| --------------------------- | ------ | ------- | ------------------------------------------------------------------------------ |
+| `User.Read.All`             | ✅      |         | Read user accounts, profiles, photos, and license assignments                  |
+| `User.ReadWrite.All`        |        | ✅       | Update user profiles, such as restoring the profile photo                      |
+| `Group.Read.All`            | ✅      |         | Read groups, their members, owners, and conversations                          |
+| `Group.ReadWrite.All`       |        | ✅       | Create groups, and manage members, owners, and conversations                   |
+| `Mail.Read`                 | ✅      |         | Read mailbox folders, messages, attachments, and inbox rules                   |
+| `Mail.ReadWrite`            |        | ✅       | Create and update mailbox folders, messages, attachments, and inbox rules      |
+| `MailboxSettings.Read`      | ✅      |         | Read user mailbox settings                                                     |
+| `MailboxSettings.ReadWrite` |        | ✅       | Update user mailbox settings                                                   |
+| `Calendars.Read`            | ✅      |         | Read user calendars and events                                                 |
+| `Calendars.ReadWrite`       |        | ✅       | Create and update calendars, events, and event attachments                     |
+| `Contacts.Read`             | ✅      |         | Read contact folders and contacts                                              |
+| `Contacts.ReadWrite`        |        | ✅       | Create and update contact folders, contacts, and contact photos                |
+| `Files.Read.All`            | ✅      |         | Read OneDrive drives, files, and sharing permissions                           |
+| `Files.ReadWrite.All`       |        | ✅       | Create and update OneDrive files and sharing permissions                       |
+| `Sites.Read.All`            | ✅      |         | Read SharePoint sites, lists, and list items                                   |
+| `Sites.ReadWrite.All`       |        | ✅       | Create and update SharePoint sites, lists, and list items                      |
+| `Notes.Read.All`            | ✅      |         | Read OneNote notebooks, sections, and pages                                    |
+| `Notes.ReadWrite.All`       |        | ✅       | Create and update OneNote notebooks, sections, and pages                       |
+| `Tasks.Read.All`            | ✅      |         | Read Planner plans, buckets, tasks, and To Do lists                            |
+| `Tasks.ReadWrite.All`       |        | ✅       | Create and update Planner plans, buckets, tasks, and To Do lists               |
+| `TeamMember.Read.All`       | ✅      |         | Read team memberships                                                          |
+| `Channel.Create`            |        | ✅       | Create channels when restoring                                                 |
+| `ChannelMessage.Read.All`   | ✅      | ✅       | Read Teams channel messages and replies. Restore reads messages to detect duplicates |
+| `Chat.Read.All`             | ✅      |         | Read Teams chat messages                                                       |
+| `Teamwork.Migrate.All`      |        | ✅       | Restore Teams channels and channel messages in migration mode                  |
 
 #### Permissions by data type
 
-| Data type            | Backup (read)                          | Restore (write)                             | Permission model |
-| -------------------- | -------------------------------------- | ------------------------------------------- | ---------------- |
-| User email           | `Mail.Read`                            | `Mail.ReadWrite`                            | Application      |
-| Email folders        | `Mail.Read`                            | `Mail.ReadWrite`                            | Application      |
-| Mailbox rules        | `MailboxSettings.Read`                 | `MailboxSettings.ReadWrite`                 | Application      |
-| Mailbox settings     | `MailboxSettings.Read`                 | `MailboxSettings.ReadWrite`                 | Application      |
-| User calendar        | `Calendars.Read`                       | `Calendars.ReadWrite`                       | Application      |
-| Calendar attachments | `Calendars.Read`                       | `Calendars.ReadWrite`                       | Application      |
-| User contacts        | `Contacts.Read`                        | `Contacts.ReadWrite`                        | Application      |
-| Contact folders      | `Contacts.Read`                        | `Contacts.ReadWrite`                        | Application      |
-| Contact photos       | `Contacts.Read`                        | `Contacts.ReadWrite`                        | Application      |
-| OneDrive files       | `Files.Read.All`                       | `Files.ReadWrite.All`                       | Application      |
-| OneDrive folders     | `Files.Read.All`                       | `Files.ReadWrite.All`                       | Application      |
-| File permissions     | `Files.Read.All`                       | `Files.ReadWrite.All`                       | Application      |
-| User profile         | `User.Read.All`                        | `User.ReadWrite.All`                        | Application      |
-| User photo           | `User.Read.All`                        | `User.ReadWrite.All`                        | Application      |
-| SharePoint sites     | `Sites.Read.All`                       | `Sites.ReadWrite.All`                       | Application      |
-| SharePoint lists     | `Sites.Read.All`                       | `Sites.ReadWrite.All`                       | Application      |
-| List items           | `Sites.Read.All`                       | `Sites.ReadWrite.All`                       | Application      |
-| Teams channels       | `Channel.ReadBasic.All`                | `Channel.Create`                            | Application      |
-| Channel messages     | `ChannelMessage.Read.All`              | `ChannelMessage.Send`                       | Application      |
-| Channel tabs         | `TeamsTab.Read.All`                    | `TeamsTab.ReadWrite.All`                    | Application      |
-| Team apps            | `TeamsAppInstallation.ReadForTeam.All` | `TeamsAppInstallation.ReadWriteForTeam.All` | Application      |
-| User chats           | `Chat.Read.All`                        | `Chat.ReadWrite.All`                        | Application      |
-| Chat messages        | `Chat.Read.All`                        | `ChatMessage.Send`                          | Application      |
-| Group membership     | `Group.Read.All`                       | `Group.ReadWrite.All`                       | Application      |
-| Group settings       | `Group.Read.All`                       | `Group.ReadWrite.All`                       | Application      |
-| Planner plans        | `Tasks.Read`                           | `Tasks.ReadWrite`                           | Delegated        |
-| Planner buckets      | `Tasks.Read`                           | `Tasks.ReadWrite`                           | Delegated        |
-| Planner tasks        | `Tasks.Read`                           | `Tasks.ReadWrite`                           | Delegated        |
-| OneNote notebooks    | `Notes.Read`                           | `Notes.ReadWrite.All`                       | Delegated        |
-| OneNote sections     | `Notes.Read`                           | `Notes.ReadWrite.All`                       | Delegated        |
-| OneNote pages        | `Notes.Read`                           | `Notes.ReadWrite.All`                       | Delegated        |
-| To-Do task lists     | `Tasks.Read`                           | `Tasks.ReadWrite`                           | Delegated        |
-| To-Do tasks          | `Tasks.Read`                           | `Tasks.ReadWrite`                           | Delegated        |
-| Group calendar       | `Group.Read.All`                       | `Group.ReadWrite.All`                       | Delegated        |
+| Data type            | Backup (read)             | Restore (write)                                     |
+| -------------------- | ------------------------- | --------------------------------------------------- |
+| User email           | `Mail.Read`               | `Mail.ReadWrite`                                    |
+| Email folders        | `Mail.Read`               | `Mail.ReadWrite`                                    |
+| Mailbox rules        | `Mail.Read`               | `Mail.ReadWrite`                                    |
+| Mailbox settings     | `MailboxSettings.Read`    | `MailboxSettings.ReadWrite`                         |
+| User calendar        | `Calendars.Read`          | `Calendars.ReadWrite`                               |
+| Calendar attachments | `Calendars.Read`          | `Calendars.ReadWrite`                               |
+| User contacts        | `Contacts.Read`           | `Contacts.ReadWrite`                                |
+| Contact folders      | `Contacts.Read`           | `Contacts.ReadWrite`                                |
+| Contact photos       | `Contacts.Read`           | `Contacts.ReadWrite`                                |
+| OneDrive files       | `Files.Read.All`          | `Files.ReadWrite.All`                               |
+| OneDrive folders     | `Files.Read.All`          | `Files.ReadWrite.All`                               |
+| File permissions     | `Files.Read.All`          | `Files.ReadWrite.All`                               |
+| User profile         | `User.Read.All`           | `User.ReadWrite.All`                                |
+| User photo           | `User.Read.All`           | `User.ReadWrite.All`                                |
+| SharePoint sites     | `Sites.Read.All`          | `Sites.ReadWrite.All`                               |
+| SharePoint lists     | `Sites.Read.All`          | `Sites.ReadWrite.All`                               |
+| List items           | `Sites.Read.All`          | `Sites.ReadWrite.All`                               |
+| Teams channels       | `Group.Read.All`          | `Channel.Create`                                    |
+| Channel messages     | `ChannelMessage.Read.All` | `Teamwork.Migrate.All`, `ChannelMessage.Read.All`   |
+| Channel tabs         | `Group.Read.All`          | `Group.ReadWrite.All`                               |
+| Team apps            | `Group.Read.All`          | `Group.ReadWrite.All`                               |
+| Team memberships     | `TeamMember.Read.All`     | `Group.ReadWrite.All`                               |
+| User chats           | `Chat.Read.All`           | Not supported                                       |
+| Chat messages        | `Chat.Read.All`           | Not supported                                       |
+| Group conversations  | `Group.Read.All`          | `Group.ReadWrite.All`                               |
+| Group membership     | `Group.Read.All`          | `Group.ReadWrite.All`                               |
+| Group settings       | `Group.Read.All`          | `Group.ReadWrite.All`                               |
+| Group calendar       | Not supported             | Not supported                                       |
+| Planner plans        | `Tasks.Read.All`          | `Tasks.ReadWrite.All`                               |
+| Planner buckets      | `Tasks.Read.All`          | `Tasks.ReadWrite.All`                               |
+| Planner tasks        | `Tasks.Read.All`          | `Tasks.ReadWrite.All`                               |
+| OneNote notebooks    | `Notes.Read.All`          | `Notes.ReadWrite.All`                               |
+| OneNote sections     | `Notes.Read.All`          | `Notes.ReadWrite.All`                               |
+| OneNote pages        | `Notes.Read.All`          | `Notes.ReadWrite.All`                               |
+| To-Do task lists     | `Tasks.Read.All`          | `Tasks.ReadWrite.All`                               |
+| To-Do tasks          | `Tasks.Read.All`          | `Tasks.ReadWrite.All`                               |
 
 ### Data format and storage
 
