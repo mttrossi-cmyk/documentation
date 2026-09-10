@@ -6,7 +6,6 @@ description: >-
 
 # Disaster recovery
 
-
 ## Definition of a disaster
 
 This chapter describes how to recover from a disaster. Before we continue, we first have to define what a disaster actually is. Two categories can be distinguished:
@@ -180,15 +179,15 @@ Marked 1 remote files for deletion
         C:\Users\User\Pictures\file0001176452626.jpg (1.65 MB)
 ```
 
-
 The 4 files from the deleted .dblock file are detected to be broken. Also detected is a change to the .dblock file that contains the other 2 files.
 
 First we solve the problem with the deleted remote .dblock file by using the `purge-broken-files` command.
 
-*****
- > ![](icon_info.png) Add advanced option `--dry-run` to the command below to see what the command will do, before actually purging the files from the backups.
+***
 
-*****
+> &#x20;Add advanced option `--dry-run` to the command below to see what the command will do, before actually purging the files from the backups.
+
+***
 
 ```nohighlight
 Duplicati.CommandLine.exe purge-broken-files "ftp://myftpserver.com/Backup/Pictures?auth-username=Duplicati&auth-password=backup" --dbpath="C:\Users\User\DuplicatiCanary\data\WCHNJBICGG.sqlite" --passphrase="4u7P_re5&+Gb>6NO{" --full-result
@@ -267,26 +266,28 @@ This command fill download all remote files from `<remoteurl>`, decrypt the file
 
 Required information:
 
-* **Storage type**  
-In this example the backup is stored using FTP, but all storage types are supported. See [Storage Providers](../backup-destinations/destination-overview.md) for more information.
-* **Address, path and credentials to access the remote files**  
-In this example the address is `myftpserver.com`, the path is `/Backup/Pictures`, the FTP username is `duplicati` and the FTP password is `backup`.
-* **The passphrase used to encrypt the backup**  
-In this example the passphrase `4u7P_re5&+Gb>6NO{` was used for the backup.
-* **Optional advanced options for access to the remote files**  
-If you applied any options that are needed to get access to the backend files, supply these options here. See [Storage Providers](../backup-destinations/destination-overview.md) for more information.
+* **Storage type**\
+  In this example the backup is stored using FTP, but all storage types are supported. See [Storage Providers](../backup-destinations/destination-overview.md) for more information.
+* **Address, path and credentials to access the remote files**\
+  In this example the address is `myftpserver.com`, the path is `/Backup/Pictures`, the FTP username is `duplicati` and the FTP password is `backup`.
+* **The passphrase used to encrypt the backup**\
+  In this example the passphrase `4u7P_re5&+Gb>6NO{` was used for the backup.
+* **Optional advanced options for access to the remote files**\
+  If you applied any options that are needed to get access to the backend files, supply these options here. See [Storage Providers](../backup-destinations/destination-overview.md) for more information.
 
-*****
-> ![](icon_important.png) Store information about your backup configuration (storage provider, storage location, credentials and passphrase) on a safe location that is also available when your computer Duplicati is lost. Without this information, your backup files are useless, because the passphrase is the only way to decrypt the files in your backup.
+***
 
-*****
+> &#x20;Store information about your backup configuration (storage provider, storage location, credentials and passphrase) on a safe location that is also available when your computer Duplicati is lost. Without this information, your backup files are useless, because the passphrase is the only way to decrypt the files in your backup.
+
+***
 
 Create an empty folder in your local filesystem, for example `C:\BackendFiles`. Be sure that the location you download the backup files to has enough free space to store **all** backup files.
 
-*****
-> ![](icon_info.png) If you are unsure about the required free space, verify how many space is used by all files with a filename that start with duplicati- (or any prefix you specified in the backup job with the --prefix option). If still unsure, use an empty external disk with enough capacity. You have to start over the complete download process if free space runs out when downloading files.
+***
 
-*****
+> &#x20;If you are unsure about the required free space, verify how many space is used by all files with a filename that start with duplicati- (or any prefix you specified in the backup job with the --prefix option). If still unsure, use an empty external disk with enough capacity. You have to start over the complete download process if free space runs out when downloading files.
+
+***
 
 This command downloads and decrypts all backup files and stores these files in `C:\BackendFiles`:
 
@@ -358,6 +359,7 @@ System.IO.InvalidDataException: Invalid header marker
 Download complete, of 49 remote files, 0 were downloaded with 1 errors
 
 ```
+
 In this example, 49 files were found at the backend. From all .DBLOCK files, 1 file was corrupt and could not be decrypted. Files with the .DINDEX extension are index files that will be recreated, therefore they are not downloaded. 4 .DLIST files were found and downloaded to `C:\BackendFiles`.
 
 As a result, the `C:\BackendFiles` folder contains 25 unencrypted .Zip files: 4 `.dlist.zip` files and 21 `.dblock.zip` files.
@@ -426,7 +428,7 @@ Merging 1960 hashes ... done!
 Merging 2067 hashes ... done!
 21: C:\BackendFiles\index.txt - Not a Duplicati file, ignoring
 Processed 21 files and found 2067 hashes
-``` 
+```
 
 The resulting index file index.txt contains a list of hashes and `.DBLOCK` filenames.
 
@@ -456,7 +458,7 @@ This command will restore all files from the latest backup version (0) to `C:\Re
 
 `Duplicati.CommandLine.RecoveryTool.exe restore C:\BackendFiles 0 --targetpath="C:\Restore"`
 
-The output starts with something similar to this:  
+The output starts with something similar to this:
 
 ```nohighlight
 Sorting index file ... done!  
@@ -472,8 +474,6 @@ All restored files are listed. The list probably contains errors, because files 
 
 In this example, from a corrupted backup with one deleted dblock file and one corrupted dblock file, 69 of 75 picture files were recovered successfully.
 
-
-<img width="524" height="570" alt="ss_disasterrecovery_01" src="https://github.com/user-attachments/assets/a73e4459-d35b-440a-8952-ea7d658fdab0" />
-
+<img src="https://github.com/user-attachments/assets/a73e4459-d35b-440a-8952-ea7d658fdab0" alt="ss_disasterrecovery_01" height="570" width="524">
 
 See the [section on the recovery tool](../duplicati-programs/command-line-interface-cli-1/recoverytool.md).

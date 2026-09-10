@@ -8,7 +8,7 @@ Duplicati supports using [Drime Cloud](https://drime.cloud) as the storage desti
 
 ## User interface
 
-<figure><picture><source srcset="../../.gitbook/assets/Screenshot 2026-09-10 at 14.42.18.png" media="(prefers-color-scheme: dark)"><img src="../../.gitbook/assets/Screenshot 2026-09-10 at 14.42.12.png" alt="Configuring the Drime Cloud destination"></picture><figcaption></figcaption></figure>
+<figure><picture><source srcset="../../.gitbook/assets/Screenshot 2026-09-10 at 14.42.18.png" media="(prefers-color-scheme: dark)"><img src="../../.gitbook/assets/Screenshot 2026-09-10 at 14.42.12.png" alt=""></picture><figcaption></figcaption></figure>
 
 To configure the Drime Cloud destination, enter a unique path for the backup and an [API token](https://app.drime.cloud/account-settings#developers).
 
